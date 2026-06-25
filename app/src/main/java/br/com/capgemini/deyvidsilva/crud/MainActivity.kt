@@ -4,44 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import br.com.capgemini.deyvidsilva.crud.ui.screen.ColaboradorScreen
 import br.com.capgemini.deyvidsilva.crud.ui.theme.GerenciamentoColaboradoresTheme
+import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
 
 class MainActivity : ComponentActivity() {
+    private val viewModel = ColaboradorViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             GerenciamentoColaboradoresTheme {
-                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                ColaboradorScreen(viewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GerenciamentoColaboradoresTheme {
-        Greeting("Android")
     }
 }

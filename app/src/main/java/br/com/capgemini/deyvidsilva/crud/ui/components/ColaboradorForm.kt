@@ -62,7 +62,7 @@ fun ColaboradorForm(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                Nivel.values().forEach {
+                Nivel.entries.forEach {
                     DropdownMenuItem(
                         text = { Text(it.name) },
                         onClick = {
