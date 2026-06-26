@@ -1,38 +1,26 @@
 package br.com.capgemini.deyvidsilva.crud.ui.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorCard
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorForm
+import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEvent
 import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
-    val formState = viewModel.formState.collectAsState()
-    val lista = viewModel.colaboradores.collectAsState()
+    val state = viewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -45,7 +33,9 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.salvar() }
+                onClick = {
+                    viewModel.onEvent(ColaboradorUiEvent.OnSalvar)
+                }
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Salvar")
             }
@@ -59,22 +49,32 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
         ) {
 
             ColaboradorForm(
-                nome = formState.value.nome,
-                email = formState.value.email,
-                nivel = formState.value.nivel,
-                estaEditando = formState.value.estaEditando,
+                nome = state.value.nome,
+                email = state.value.email,
+                nivel = state.value.nivel,
+                estaEditando = state.value.estaEditando,
 
-                onNomeChange = viewModel::onNomeChange,
-                onEmailChange = viewModel::onEmailChange,
-                onNivelChange = viewModel::onNivelChange,
+                onNomeChange = {
+                    viewModel.onEvent(ColaboradorUiEvent.OnNomeChange(it))
+                },
+                onEmailChange = {
+                    viewModel.onEvent(ColaboradorUiEvent.OnEmailChange(it))
+                },
+                onNivelChange = {
+                    viewModel.onEvent(ColaboradorUiEvent.OnNivelChange(it))
+                },
 
-                onSalvar = { viewModel.salvar() },
-                onCancelar = { viewModel.cancelarEdicao() }
+                onSalvar = {
+                    viewModel.onEvent(ColaboradorUiEvent.OnSalvar)
+                },
+                onCancelar = {
+                    viewModel.onEvent(ColaboradorUiEvent.OnCancelar)
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+            HorizontalDivider()
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -87,17 +87,19 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
             LazyColumn {
                 items(
-                    lista.value,
+                    items = state.value.colaboradores,
                     key = { it.id }
                 ) { colaborador ->
+
                     ColaboradorCard(
                         colaborador = colaborador,
                         onSelecionar = {
-                            viewModel.selecionarParaEditar(it)
+                            viewModel.onEvent(
+                                ColaboradorUiEvent.OnSelecionar(colaborador)
+                            )
                         },
                         modifier = Modifier.safeDrawingPadding()
                     )
-
                 }
             }
         }

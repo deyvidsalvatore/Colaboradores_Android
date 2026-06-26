@@ -2,11 +2,11 @@ package br.com.capgemini.deyvidsilva.crud.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import br.com.capgemini.deyvidsilva.crud.domain.entity.Colaborador
-import br.com.capgemini.deyvidsilva.crud.domain.entity.enums.Nivel
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.CadastrarColaboradorUseCase
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.EditarColaboradorUseCase
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.RemoverColaboradorUseCase
-import br.com.capgemini.deyvidsilva.crud.ui.state.FormState
+import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEvent
+import br.com.capgemini.deyvidsilva.crud.ui.state.ColaboradorViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -14,77 +14,83 @@ class ColaboradorViewModel : ViewModel() {
 
     private val listaInterna = mutableListOf<Colaborador>()
 
-    private val _colaboradores = MutableStateFlow<List<Colaborador>>(emptyList())
-    val colaboradores: StateFlow<List<Colaborador>> = _colaboradores
-
-    private val _formState = MutableStateFlow(FormState())
-    val formState: StateFlow<FormState> = _formState
-
     private val cadastrarUseCase = CadastrarColaboradorUseCase()
     private val editarUseCase = EditarColaboradorUseCase(listaInterna)
     private val removerUseCase = RemoverColaboradorUseCase(listaInterna)
 
-    fun onNomeChange(nome: String) {
-        _formState.value = _formState.value.copy(nome = nome)
-    }
+    private val _state = MutableStateFlow(ColaboradorViewState())
+    val state: StateFlow<ColaboradorViewState> = _state
 
-    fun onEmailChange(email: String) {
-        _formState.value = _formState.value.copy(email = email)
-    }
+    fun onEvent(event: ColaboradorUiEvent) {
+        when (event) {
 
-    fun onNivelChange(nivel: Nivel) {
-        _formState.value = _formState.value.copy(nivel = nivel)
-    }
-
-    fun salvar() {
-        val state = _formState.value
-
-        if (state.estaEditando) {
-            val sucesso = editarUseCase(
-                id = state.id!!,
-                nome = state.nome,
-                email = state.email,
-                nivel = state.nivel
-            )
-
-            if (sucesso) {
-                atualizarLista()
+            is ColaboradorUiEvent.OnNomeChange -> {
+                _state.value = _state.value.copy(nome = event.nome)
             }
 
-        } else {
-            val novo = cadastrarUseCase(
-                nome = state.nome,
-                email = state.email,
-                nivel = state.nivel
-            )
+            is ColaboradorUiEvent.OnEmailChange -> {
+                _state.value = _state.value.copy(email = event.email)
+            }
 
-            listaInterna.add(novo)
-            atualizarLista()
+            is ColaboradorUiEvent.OnNivelChange -> {
+                _state.value = _state.value.copy(nivel = event.nivel)
+            }
+
+            is ColaboradorUiEvent.OnSelecionar -> {
+                val c = event.colaborador
+                _state.value = _state.value.copy(
+                    nome = c.nome,
+                    email = c.email,
+                    nivel = c.nivel,
+                    estaEditando = true
+                )
+            }
+
+            ColaboradorUiEvent.OnSalvar -> {
+                val s = _state.value
+
+                if (s.estaEditando) {
+                    editarUseCase(
+                        id = listaInterna.find { it.nome == s.nome }?.id ?: return,
+                        nome = s.nome,
+                        email = s.email,
+                        nivel = s.nivel
+                    )
+                } else {
+                    val novo = cadastrarUseCase(
+                        nome = s.nome,
+                        email = s.email,
+                        nivel = s.nivel
+                    )
+                    listaInterna.add(novo)
+                }
+
+                atualizarLista()
+                limparFormulario()
+            }
+
+            ColaboradorUiEvent.OnCancelar -> {
+                limparFormulario()
+            }
+
+            is ColaboradorUiEvent.OnRemover -> {
+                removerUseCase(event.id)
+                atualizarLista()
+            }
         }
-
-        limparFormulario()
     }
 
-    fun selecionarParaEditar(colaborador: Colaborador) {
-        _formState.value = FormState(
-            id = colaborador.id,
-            nome = colaborador.nome,
-            email = colaborador.email,
-            nivel = colaborador.nivel,
-            estaEditando = true
+    private fun atualizarLista() {
+        _state.value = _state.value.copy(
+            colaboradores = listaInterna.toList()
         )
     }
 
-    fun cancelarEdicao() {
-        limparFormulario()
-    }
-
-
-    private fun atualizarLista() {
-        _colaboradores.value = listaInterna.toList()
-    }
-
     private fun limparFormulario() {
-        _formState.value = FormState()
+        _state.value = _state.value.copy(
+            nome = "",
+            email = "",
+            estaEditando = false
+        )
     }
 }

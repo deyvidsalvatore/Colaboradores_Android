@@ -24,6 +24,5 @@ class CadastrarColaboradorUseCase {
         return colaborador;
     }
 
-    fun getLista(): List<Colaborador> = colaboradores;
 
 }
