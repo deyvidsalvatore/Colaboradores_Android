@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorCard
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorForm
 import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
 
@@ -60,12 +62,14 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                 nome = formState.value.nome,
                 email = formState.value.email,
                 nivel = formState.value.nivel,
+                estaEditando = formState.value.estaEditando,
 
                 onNomeChange = viewModel::onNomeChange,
                 onEmailChange = viewModel::onEmailChange,
                 onNivelChange = viewModel::onNivelChange,
 
-                onSalvar = { viewModel.salvar() }
+                onSalvar = { viewModel.salvar() },
+                onCancelar = { viewModel.cancelarEdicao() }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -82,10 +86,18 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn {
-                items(lista.value) { colaborador ->
-                    Text("Nome: ${colaborador.nome}")
-                    Text("E-mail: ${colaborador.email}")
-                    Text("Nível: ${colaborador.nivel}")
+                items(
+                    lista.value,
+                    key = { it.id }
+                ) { colaborador ->
+                    ColaboradorCard(
+                        colaborador = colaborador,
+                        onSelecionar = {
+                            viewModel.selecionarParaEditar(it)
+                        },
+                        modifier = Modifier.safeDrawingPadding()
+                    )
+
                 }
             }
         }

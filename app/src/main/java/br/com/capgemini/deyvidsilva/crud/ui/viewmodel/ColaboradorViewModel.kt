@@ -39,16 +39,46 @@ class ColaboradorViewModel : ViewModel() {
     fun salvar() {
         val state = _formState.value
 
-        val novo = cadastrarUseCase(
-            nome = state.nome,
-            email = state.email,
-            nivel = state.nivel
-        )
+        if (state.estaEditando) {
+            val sucesso = editarUseCase(
+                id = state.id!!,
+                nome = state.nome,
+                email = state.email,
+                nivel = state.nivel
+            )
 
-        listaInterna.add(novo)
-        atualizarLista()
+            if (sucesso) {
+                atualizarLista()
+            }
+
+        } else {
+            val novo = cadastrarUseCase(
+                nome = state.nome,
+                email = state.email,
+                nivel = state.nivel
+            )
+
+            listaInterna.add(novo)
+            atualizarLista()
+        }
+
         limparFormulario()
     }
+
+    fun selecionarParaEditar(colaborador: Colaborador) {
+        _formState.value = FormState(
+            id = colaborador.id,
+            nome = colaborador.nome,
+            email = colaborador.email,
+            nivel = colaborador.nivel,
+            estaEditando = true
+        )
+    }
+
+    fun cancelarEdicao() {
+        limparFormulario()
+    }
+
 
     private fun atualizarLista() {
         _colaboradores.value = listaInterna.toList()

@@ -23,12 +23,13 @@ fun ColaboradorForm(
     nome: String,
     email: String,
     nivel: Nivel,
+    estaEditando: Boolean,
     onNomeChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onNivelChange: (Nivel) -> Unit,
-    onSalvar: () -> Unit
+    onSalvar: () -> Unit,
+    onCancelar: () -> Unit
 ) {
-
     Column(modifier = Modifier.padding(16.dp)) {
 
         AppTextField(
@@ -77,9 +78,19 @@ fun ColaboradorForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         AppButton(
-            text = "Salvar",
+            text = if (estaEditando) "Atualizar" else "Salvar",
             onClick = onSalvar,
             modifier = Modifier.fillMaxWidth()
         )
+
+        if (estaEditando) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            AppButton(
+                text = "Cancelar",
+                onClick = onCancelar,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }

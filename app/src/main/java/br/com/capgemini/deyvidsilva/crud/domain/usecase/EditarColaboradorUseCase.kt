@@ -7,15 +7,16 @@ class EditarColaboradorUseCase(
     private val colaboradores: MutableList<Colaborador>
 ) {
     operator fun invoke(
-        id: Int,
-        nome: String,
-        email: String,
-        nivel: Nivel
+        id: Int, nome: String, email: String, nivel: Nivel
     ): Boolean {
-        val colaborador = colaboradores.find { it.id == id } ?: return false;
-        colaborador.nome = nome;
-        colaborador.email = email;
-        colaborador .nivel = nivel;
-        return true;
+
+        val index = colaboradores.indexOfFirst { it.id == id }
+        if (index == -1) return false
+
+        colaboradores[index] = colaboradores[index].copy(
+            nome = nome, email = email, nivel = nivel
+        )
+
+        return true
     }
 }
