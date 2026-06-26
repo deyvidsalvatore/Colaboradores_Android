@@ -9,9 +9,14 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorCard
+import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorExclusionModal
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorForm
 import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEvent
 import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
@@ -21,6 +26,7 @@ import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
 fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
     val state = viewModel.state.collectAsState()
+    var idParaRemover by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
         topBar = {
@@ -98,10 +104,24 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                                 ColaboradorUiEvent.OnSelecionar(colaborador)
                             )
                         },
-                        modifier = Modifier.safeDrawingPadding()
+                        modifier = Modifier.safeDrawingPadding(),
+                        onRemover = { id -> idParaRemover = id}
                     )
                 }
             }
         }
     }
+
+    ColaboradorExclusionModal(
+        isOpen = idParaRemover != null,
+        onConfirm = {
+            viewModel.onEvent(
+                ColaboradorUiEvent.OnRemover(idParaRemover!!)
+            )
+            idParaRemover = null
+        },
+        onDismiss = {
+            idParaRemover = null
+        }
+    )
 }
