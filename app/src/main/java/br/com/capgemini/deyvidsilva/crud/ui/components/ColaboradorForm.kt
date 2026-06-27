@@ -1,15 +1,20 @@
 package br.com.capgemini.deyvidsilva.crud.ui.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,8 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.capgemini.deyvidsilva.crud.domain.entity.enums.Nivel
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColaboradorForm(
     nome: String,
@@ -56,32 +59,42 @@ fun ColaboradorForm(
 
         var expanded by remember { mutableStateOf(false) }
 
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-
+        Box(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = nivel.name,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Nível") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                        contentDescription = "Selecionar Nível"
+                    )
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = OutlinedTextFieldDefaults.colors().unfocusedIndicatorColor,
+                    focusedLabelColor = OutlinedTextFieldDefaults.colors().unfocusedLabelColor
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
             )
 
-            ExposedDropdownMenu(
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable { expanded = true }
+            )
+
+            DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth(0.9f)
             ) {
-                Nivel.entries.forEach {
+                Nivel.entries.forEach { itemNivel ->
                     DropdownMenuItem(
-                        text = { Text(it.name) },
+                        text = { Text(itemNivel.name) },
                         onClick = {
-                            onNivelChange(it)
+                            onNivelChange(itemNivel)
                             expanded = false
                         }
                     )
