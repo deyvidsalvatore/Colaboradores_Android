@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,12 @@ fun ColaboradorCard(
 
             Text("Nome: ${colaborador.nome}")
             Text("Email: ${colaborador.email}")
-            Text("Nível: ${colaborador.nivel}")
+            AssistChip(
+                onClick = {},
+                label = {
+                    Text(colaborador.nivel.name)
+                }
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 

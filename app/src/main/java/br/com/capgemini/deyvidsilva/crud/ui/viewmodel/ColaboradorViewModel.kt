@@ -1,16 +1,26 @@
 package br.com.capgemini.deyvidsilva.crud.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import br.com.capgemini.deyvidsilva.crud.domain.entity.Colaborador
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.CadastrarColaboradorUseCase
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.EditarColaboradorUseCase
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.RemoverColaboradorUseCase
+import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEffect
 import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEvent
 import br.com.capgemini.deyvidsilva.crud.ui.state.ColaboradorViewState
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class ColaboradorViewModel : ViewModel() {
+
+
+    private val _effect = MutableSharedFlow<ColaboradorUiEffect>()
+    val effect: SharedFlow<ColaboradorUiEffect> = _effect
 
     private val listaInterna = mutableListOf<Colaborador>()
 
@@ -56,6 +66,7 @@ class ColaboradorViewModel : ViewModel() {
                         email = s.email,
                         nivel = s.nivel
                     )
+                    enviarSnackbar("Atualizado com sucesso ✅")
                 } else {
                     val novo = cadastrarUseCase(
                         nome = s.nome,
@@ -63,6 +74,7 @@ class ColaboradorViewModel : ViewModel() {
                         nivel = s.nivel
                     )
                     listaInterna.add(novo)
+                    enviarSnackbar("Salvo com sucesso ✅")
                 }
 
                 atualizarLista()
@@ -76,6 +88,7 @@ class ColaboradorViewModel : ViewModel() {
             is ColaboradorUiEvent.OnRemover -> {
                 removerUseCase(event.id)
                 atualizarLista()
+                enviarSnackbar("Excluído com sucesso 🗑️")
             }
         }
     }
@@ -92,5 +105,12 @@ class ColaboradorViewModel : ViewModel() {
             email = "",
             estaEditando = false
         )
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun enviarSnackbar(msg: String) {
+        viewModelScope.launch {
+            _effect.emit(ColaboradorUiEffect.ShowSnackbar(msg))
+        }
     }
 }

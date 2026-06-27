@@ -1,13 +1,26 @@
 package br.com.capgemini.deyvidsilva.crud.ui.screen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorCard
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorExclusionModal
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorForm
+import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEffect
 import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEvent
 import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
 
@@ -27,8 +41,20 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
     val state = viewModel.state.collectAsState()
     var idParaRemover by remember { mutableStateOf<Int?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is ColaboradorUiEffect.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
+            }
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Gerenciamento Colaboradores") },
@@ -104,8 +130,9 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                                 ColaboradorUiEvent.OnSelecionar(colaborador)
                             )
                         },
-                        modifier = Modifier.safeDrawingPadding(),
-                        onRemover = { id -> idParaRemover = id}
+                        onRemover = { id ->
+                            idParaRemover = id
+                        }
                     )
                 }
             }
@@ -115,9 +142,11 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
     ColaboradorExclusionModal(
         isOpen = idParaRemover != null,
         onConfirm = {
-            viewModel.onEvent(
-                ColaboradorUiEvent.OnRemover(idParaRemover!!)
-            )
+            idParaRemover?.let { id ->
+                viewModel.onEvent(
+                    ColaboradorUiEvent.OnRemover(id)
+                )
+            }
             idParaRemover = null
         },
         onDismiss = {
