@@ -4,6 +4,7 @@ import br.com.capgemini.deyvidsilva.crud.domain.entity.Colaborador
 import br.com.capgemini.deyvidsilva.crud.domain.entity.enums.Nivel
 
 data class ColaboradorViewState(
+    val idEmEdicao: Int? = null,
     val nome: String = "",
     val email: String = "",
     val nivel: Nivel = Nivel.ADMINISTRATIVO,

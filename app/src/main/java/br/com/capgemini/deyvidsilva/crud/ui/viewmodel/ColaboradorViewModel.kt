@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 
 class ColaboradorViewModel : ViewModel() {
 
-
     private val _effect = MutableSharedFlow<ColaboradorUiEffect>()
     val effect: SharedFlow<ColaboradorUiEffect> = _effect
 
@@ -28,7 +27,6 @@ class ColaboradorViewModel : ViewModel() {
     private val cadastrarUseCase = CadastrarColaboradorUseCase()
     private val editarUseCase = EditarColaboradorUseCase(listaInterna)
     private val removerUseCase = RemoverColaboradorUseCase(listaInterna)
-
     private val validarFormularioUseCase = ValidarFormularioUseCase()
 
     private val _state = MutableStateFlow(ColaboradorViewState())
@@ -36,7 +34,6 @@ class ColaboradorViewModel : ViewModel() {
 
     fun onEvent(event: ColaboradorUiEvent) {
         when (event) {
-
             is ColaboradorUiEvent.OnNomeChange -> {
                 _state.value = _state.value.copy(
                     nome = event.nome,
@@ -58,6 +55,7 @@ class ColaboradorViewModel : ViewModel() {
             is ColaboradorUiEvent.OnSelecionar -> {
                 val c = event.colaborador
                 _state.value = _state.value.copy(
+                    idEmEdicao = c.id,
                     nome = c.nome,
                     email = c.email,
                     nivel = c.nivel,
@@ -70,13 +68,11 @@ class ColaboradorViewModel : ViewModel() {
             ColaboradorUiEvent.OnSalvar -> {
                 val s = _state.value
 
-                val idAtual = if (s.estaEditando) listaInterna.find { it.nome == s.nome }?.id else null
-
                 val (erroNome, erroEmail) = validarFormularioUseCase(
                     nome = s.nome,
                     email = s.email,
                     colaboradoresExistentes = listaInterna,
-                    idAtual = idAtual
+                    idAtual = s.idEmEdicao
                 )
 
                 if (erroNome != null || erroEmail != null) {
@@ -88,8 +84,9 @@ class ColaboradorViewModel : ViewModel() {
                 }
 
                 if (s.estaEditando) {
+                    val idParaEditar = s.idEmEdicao ?: return
                     editarUseCase(
-                        id = listaInterna.find { it.nome == s.nome }?.id ?: return,
+                        id = idParaEditar,
                         nome = s.nome,
                         email = s.email,
                         nivel = s.nivel
@@ -129,6 +126,7 @@ class ColaboradorViewModel : ViewModel() {
 
     private fun limparFormulario() {
         _state.value = _state.value.copy(
+            idEmEdicao = null,
             nome = "",
             email = "",
             estaEditando = false,
