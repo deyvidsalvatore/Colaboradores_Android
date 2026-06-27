@@ -70,7 +70,14 @@ class ColaboradorViewModel : ViewModel() {
             ColaboradorUiEvent.OnSalvar -> {
                 val s = _state.value
 
-                val (erroNome, erroEmail) = validarFormularioUseCase(s.nome, s.email)
+                val idAtual = if (s.estaEditando) listaInterna.find { it.nome == s.nome }?.id else null
+
+                val (erroNome, erroEmail) = validarFormularioUseCase(
+                    nome = s.nome,
+                    email = s.email,
+                    colaboradoresExistentes = listaInterna,
+                    idAtual = idAtual
+                )
 
                 if (erroNome != null || erroEmail != null) {
                     _state.value = _state.value.copy(
