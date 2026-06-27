@@ -2,6 +2,12 @@
 
 Sistema desenvolvido em Android nativo com Jetpack Compose utilizando os principios da Clean Architecture e Material Design 3 para o gerenciamento de colaboradores de uma organizacao.
 
+## Showcase do Projeto
+
+Confira a demonstracao em video das funcionalidades e da interface do aplicativo:
+
+[![Showcase do Projeto](https://img.youtube.com/vi/g30A8Gd2NPw/0.jpg)](https://www.youtube.com/watch?v=g30A8Gd2NPw)
+
 ## Arquitetura do Projeto
 
 O projeto segue uma estrutura baseada em camadas para garantir o desacoplamento do modelo de negocio em relacao aos frameworks de interface e componentes do Android.
