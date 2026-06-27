@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -104,18 +103,15 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            HorizontalDivider()
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Colaboradores",
-                style = MaterialTheme.typography.titleLarge
+                text = "Colaboradores Ativos",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             LazyColumn {
                 items(
@@ -125,13 +121,13 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
                     ColaboradorCard(
                         colaborador = colaborador,
-                        onSelecionar = {
+                        onEditar = {
                             viewModel.onEvent(
                                 ColaboradorUiEvent.OnSelecionar(colaborador)
                             )
                         },
-                        onRemover = { id ->
-                            idParaRemover = id
+                        onRemover = {
+                            idParaRemover = colaborador.id
                         }
                     )
                 }

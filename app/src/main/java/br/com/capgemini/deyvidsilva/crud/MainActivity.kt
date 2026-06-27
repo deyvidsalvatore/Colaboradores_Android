@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import br.com.capgemini.deyvidsilva.crud.ui.screen.ColaboradorScreen
-import br.com.capgemini.deyvidsilva.crud.ui.theme.GerenciamentoColaboradoresTheme
+import br.com.capgemini.deyvidsilva.crud.ui.theme.Colaboradores_AndroidTheme
 import br.com.capgemini.deyvidsilva.crud.ui.viewmodel.ColaboradorViewModel
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            GerenciamentoColaboradoresTheme {
+            Colaboradores_AndroidTheme {
                 ColaboradorScreen(viewModel)
             }
         }

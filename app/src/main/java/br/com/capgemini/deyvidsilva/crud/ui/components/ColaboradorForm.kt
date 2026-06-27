@@ -7,12 +7,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -37,87 +41,94 @@ fun ColaboradorForm(
     onSalvar: () -> Unit,
     onCancelar: () -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
 
-        AppTextField(
-            value = nome,
-            onValueChange = onNomeChange,
-            label = "Nome",
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        AppTextField(
-            value = email,
-            onValueChange = onEmailChange,
-            label = "Email",
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        var expanded by remember { mutableStateOf(false) }
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = nivel.name,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Nível") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                        contentDescription = "Selecionar Nível"
-                    )
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = OutlinedTextFieldDefaults.colors().unfocusedIndicatorColor,
-                    focusedLabelColor = OutlinedTextFieldDefaults.colors().unfocusedLabelColor
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable { expanded = true }
-            )
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.9f)
-            ) {
-                Nivel.entries.forEach { itemNivel ->
-                    DropdownMenuItem(
-                        text = { Text(itemNivel.name) },
-                        onClick = {
-                            onNivelChange(itemNivel)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        AppButton(
-            text = if (estaEditando) "Atualizar" else "Salvar",
-            onClick = onSalvar,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (estaEditando) {
-            Spacer(modifier = Modifier.height(8.dp))
-
-            AppButton(
-                text = "Cancelar",
-                onClick = onCancelar,
+            AppTextField(
+                value = nome,
+                onValueChange = onNomeChange,
+                label = "Nome",
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            AppTextField(
+                value = email,
+                onValueChange = onEmailChange,
+                label = "Email",
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            var expanded by remember { mutableStateOf(false) }
+
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = nivel.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Nível") },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                            contentDescription = "Selecionar Nível"
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = OutlinedTextFieldDefaults.colors().unfocusedIndicatorColor,
+                        focusedLabelColor = OutlinedTextFieldDefaults.colors().unfocusedLabelColor
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { expanded = true }
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    Nivel.entries.forEach { itemNivel ->
+                        DropdownMenuItem(
+                            text = { Text(itemNivel.name) },
+                            onClick = {
+                                onNivelChange(itemNivel)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AppButton(
+                text = if (estaEditando) "Atualizar" else "Salvar",
+                onClick = onSalvar,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (estaEditando) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                AppButton(
+                    text = "Cancelar",
+                    onClick = onCancelar,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
