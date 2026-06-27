@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -61,15 +59,6 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                     Icon(Icons.Default.Person, contentDescription = null)
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.onEvent(ColaboradorUiEvent.OnSalvar)
-                }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Salvar")
-            }
         }
     ) { padding ->
 
@@ -84,7 +73,8 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                 email = state.value.email,
                 nivel = state.value.nivel,
                 estaEditando = state.value.estaEditando,
-
+                erroNome = state.value.erroNome,
+                erroEmail = state.value.erroEmail,
                 onNomeChange = {
                     viewModel.onEvent(ColaboradorUiEvent.OnNomeChange(it))
                 },
@@ -94,7 +84,6 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
                 onNivelChange = {
                     viewModel.onEvent(ColaboradorUiEvent.OnNivelChange(it))
                 },
-
                 onSalvar = {
                     viewModel.onEvent(ColaboradorUiEvent.OnSalvar)
                 },

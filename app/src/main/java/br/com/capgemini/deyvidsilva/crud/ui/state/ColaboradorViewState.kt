@@ -8,5 +8,7 @@ data class ColaboradorViewState(
     val email: String = "",
     val nivel: Nivel = Nivel.ADMINISTRATIVO,
     val estaEditando: Boolean = false,
-    val colaboradores: List<Colaborador> = emptyList()
+    val colaboradores: List<Colaborador> = emptyList(),
+    val erroNome: String? = null,
+    val erroEmail: String? = null
 )

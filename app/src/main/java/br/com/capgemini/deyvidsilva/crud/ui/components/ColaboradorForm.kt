@@ -35,6 +35,8 @@ fun ColaboradorForm(
     email: String,
     nivel: Nivel,
     estaEditando: Boolean,
+    erroNome: String? = null,
+    erroEmail: String? = null,
     onNomeChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onNivelChange: (Nivel) -> Unit,
@@ -53,6 +55,7 @@ fun ColaboradorForm(
                 value = nome,
                 onValueChange = onNomeChange,
                 label = "Nome",
+                erro = erroNome,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -62,6 +65,7 @@ fun ColaboradorForm(
                 value = email,
                 onValueChange = onEmailChange,
                 label = "Email",
+                erro = erroEmail,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -85,8 +89,7 @@ fun ColaboradorForm(
                         focusedBorderColor = OutlinedTextFieldDefaults.colors().unfocusedIndicatorColor,
                         focusedLabelColor = OutlinedTextFieldDefaults.colors().unfocusedLabelColor
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Box(

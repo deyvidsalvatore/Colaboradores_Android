@@ -6,6 +6,7 @@ import br.com.capgemini.deyvidsilva.crud.domain.entity.Colaborador
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.CadastrarColaboradorUseCase
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.EditarColaboradorUseCase
 import br.com.capgemini.deyvidsilva.crud.domain.usecase.RemoverColaboradorUseCase
+import br.com.capgemini.deyvidsilva.crud.domain.usecase.ValidarFormularioUseCase
 import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEffect
 import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEvent
 import br.com.capgemini.deyvidsilva.crud.ui.state.ColaboradorViewState
@@ -28,6 +29,8 @@ class ColaboradorViewModel : ViewModel() {
     private val editarUseCase = EditarColaboradorUseCase(listaInterna)
     private val removerUseCase = RemoverColaboradorUseCase(listaInterna)
 
+    private val validarFormularioUseCase = ValidarFormularioUseCase()
+
     private val _state = MutableStateFlow(ColaboradorViewState())
     val state: StateFlow<ColaboradorViewState> = _state
 
@@ -35,11 +38,17 @@ class ColaboradorViewModel : ViewModel() {
         when (event) {
 
             is ColaboradorUiEvent.OnNomeChange -> {
-                _state.value = _state.value.copy(nome = event.nome)
+                _state.value = _state.value.copy(
+                    nome = event.nome,
+                    erroNome = null
+                )
             }
 
             is ColaboradorUiEvent.OnEmailChange -> {
-                _state.value = _state.value.copy(email = event.email)
+                _state.value = _state.value.copy(
+                    email = event.email,
+                    erroEmail = null
+                )
             }
 
             is ColaboradorUiEvent.OnNivelChange -> {
@@ -52,12 +61,24 @@ class ColaboradorViewModel : ViewModel() {
                     nome = c.nome,
                     email = c.email,
                     nivel = c.nivel,
-                    estaEditando = true
+                    estaEditando = true,
+                    erroNome = null,
+                    erroEmail = null
                 )
             }
 
             ColaboradorUiEvent.OnSalvar -> {
                 val s = _state.value
+
+                val (erroNome, erroEmail) = validarFormularioUseCase(s.nome, s.email)
+
+                if (erroNome != null || erroEmail != null) {
+                    _state.value = _state.value.copy(
+                        erroNome = erroNome,
+                        erroEmail = erroEmail
+                    )
+                    return
+                }
 
                 if (s.estaEditando) {
                     editarUseCase(
@@ -103,7 +124,9 @@ class ColaboradorViewModel : ViewModel() {
         _state.value = _state.value.copy(
             nome = "",
             email = "",
-            estaEditando = false
+            estaEditando = false,
+            erroNome = null,
+            erroEmail = null
         )
     }
 
