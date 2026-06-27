@@ -29,7 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import br.com.capgemini.deyvidsilva.crud.domain.entity.Colaborador
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorCard
+import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorDetailsModal
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorExclusionModal
 import br.com.capgemini.deyvidsilva.crud.ui.components.ColaboradorForm
 import br.com.capgemini.deyvidsilva.crud.ui.event.ColaboradorUiEffect
@@ -41,6 +43,7 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
     val state = viewModel.state.collectAsState()
     var idParaRemover by remember { mutableStateOf<Int?>(null) }
+    var colaboradorParaVisualizar by remember { mutableStateOf<Colaborador?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -132,6 +135,9 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
 
                     ColaboradorCard(
                         colaborador = colaborador,
+                        onVisualizar = {
+                            colaboradorParaVisualizar = colaborador
+                        },
                         onEditar = {
                             viewModel.onEvent(
                                 ColaboradorUiEvent.OnSelecionar(colaborador)
@@ -145,6 +151,11 @@ fun ColaboradorScreen(viewModel: ColaboradorViewModel) {
             }
         }
     }
+
+    ColaboradorDetailsModal(
+        colaborador = colaboradorParaVisualizar,
+        onDismiss = { colaboradorParaVisualizar = null }
+    )
 
     ColaboradorExclusionModal(
         isOpen = idParaRemover != null,
