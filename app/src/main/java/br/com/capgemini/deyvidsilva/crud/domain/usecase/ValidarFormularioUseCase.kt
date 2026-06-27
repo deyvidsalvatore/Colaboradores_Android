@@ -15,11 +15,13 @@ class ValidarFormularioUseCase {
 
     private fun validarNome(nome: String): String? {
         val regexNumeros = ".*\\d+.*".toRegex()
+        val regexEspeciais = ".*[^a-zA-ZÀ-ÿ\\s\\d].*".toRegex()
 
         return when {
             nome.isBlank() -> "O nome não pode ser vazio"
             nome.length !in 3..50 -> "O nome deve ter entre 3 e 50 caracteres"
             regexNumeros.matches(nome) -> "O nome não pode conter números"
+            regexEspeciais.matches(nome) -> "O nome não pode conter caracteres especiais"
             else -> null
         }
     }
